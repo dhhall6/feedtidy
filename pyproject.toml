@@ -1,0 +1,15 @@
+[project]
+name = "feedtidy"
+version = "0.1.0"
+description = "Normalize messy RSS feeds into clean, consistent items"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "dhhall6"}]
+
+[project.scripts]
+feedtidy = "feedtidy.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
