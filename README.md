@@ -1,11 +1,12 @@
 # feedtidy
 
-Real RSS feeds are messier than the spec suggests. Dates show up in RFC 2822,
-plain ISO, or something a CMS made up. HTML entities get escaped twice.
+Real feeds are messier than the spec suggests. Dates show up in RFC 2822,
+RFC 3339, or something a CMS made up. HTML entities get escaped twice.
 Descriptions come padded with newlines and tabs from whatever template
-generated them. feedtidy reads an RSS 2.0 document and produces items with a
-single consistent shape: clean title, clean link, clean description, and a
-date normalized to ISO 8601 UTC (or `null` if it truly can't be parsed).
+generated them. feedtidy reads an RSS 2.0 or Atom document and produces
+items with a single consistent shape: clean title, clean link, clean
+description, and a date normalized to ISO 8601 UTC (or `null` if it truly
+can't be parsed).
 
 ## Usage
 
@@ -54,7 +55,7 @@ for item in items:
 
 ## Status
 
-Handles RSS 2.0. Atom feeds and RSS extensions (media, content:encoded,
+Handles RSS 2.0 and Atom. RSS extensions (media, content:encoded,
 namespaced fields) aren't supported yet - see the issues for what's planned.
 
 ## Install
