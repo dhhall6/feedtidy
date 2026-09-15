@@ -47,6 +47,8 @@ def render_human(items: list[FeedItem]) -> str:
             lines.append(f"   {item.link}")
         if item.published:
             lines.append(f"   published: {item.published}")
+        if item.image:
+            lines.append(f"   image: {item.image}")
         if item.description:
             snippet = item.description
             if len(snippet) > 200:

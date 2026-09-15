@@ -36,7 +36,8 @@ $ feedtidy example.xml --json
     "link": "https://example.com/news/bike-lanes",
     "description": "Council members voted 5-2 to approve the plan after months of debate.",
     "published": "2026-03-04T14:30:00Z",
-    "guid": "https://example.com/news/bike-lanes"
+    "guid": "https://example.com/news/bike-lanes",
+    "image": null
   }
 ]
 ```
@@ -55,8 +56,9 @@ for item in items:
 
 ## Status
 
-Handles RSS 2.0 and Atom. RSS extensions (media, content:encoded,
-namespaced fields) aren't supported yet - see the issues for what's planned.
+Handles RSS 2.0 and Atom, including content:encoded (preferred over
+`<description>` when both are present) and an item image pulled from
+media:thumbnail, media:content, or `<enclosure>`.
 
 ## Install
 

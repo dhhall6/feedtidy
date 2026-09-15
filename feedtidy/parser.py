@@ -40,6 +40,7 @@ class FeedItem:
     description: str
     published: Optional[str]  # ISO 8601 UTC, or None if unparseable
     guid: Optional[str]
+    image: Optional[str] = None
 
     def to_dict(self) -> dict:
         return {
@@ -48,6 +49,7 @@ class FeedItem:
             "description": self.description,
             "published": self.published,
             "guid": self.guid,
+            "image": self.image,
         }
 
 
@@ -159,6 +161,45 @@ def _atom_date(entry: ET.Element) -> Optional[str]:
     return normalize_date(_child_text(entry, "updated"))
 
 
+def _rss_description(node: ET.Element) -> str:
+    """Prefer content:encoded over <description> when both are present.
+
+    content:encoded (the RSS content module) usually holds the full HTML
+    body, while <description> is often just a short summary or the same
+    text truncated. The plain <description> tag is the fallback for feeds
+    that don't use the module at all.
+    """
+    encoded = _child_text(node, "encoded")
+    if encoded:
+        return clean_text(encoded)
+    return clean_text(_child_text(node, "description"))
+
+
+def _find_image(node: ET.Element) -> Optional[str]:
+    """Pull an item image out of whatever namespaced field offers one.
+
+    Checked in order of how likely each is to actually point at an image:
+    media:thumbnail, then media:content (only if it's tagged as an image),
+    then the plain RSS <enclosure> element. Shared between RSS items and
+    Atom entries since media namespace elements show up in both.
+    """
+    thumbnail = _find_child(node, "thumbnail")
+    if thumbnail is not None and thumbnail.get("url"):
+        return clean_text(thumbnail.get("url"))
+
+    for content in _find_children(node, "content"):
+        medium = content.get("medium")
+        content_type = content.get("type", "")
+        if (medium == "image" or content_type.startswith("image/")) and content.get("url"):
+            return clean_text(content.get("url"))
+
+    enclosure = _find_child(node, "enclosure")
+    if enclosure is not None and enclosure.get("type", "").startswith("image/") and enclosure.get("url"):
+        return clean_text(enclosure.get("url"))
+
+    return None
+
+
 def _parse_rss(root: ET.Element) -> list[FeedItem]:
     channel = _find_child(root, "channel")
     if channel is None:
@@ -170,9 +211,10 @@ def _parse_rss(root: ET.Element) -> list[FeedItem]:
             FeedItem(
                 title=clean_text(_child_text(node, "title")),
                 link=clean_text(_child_text(node, "link")),
-                description=clean_text(_child_text(node, "description")),
+                description=_rss_description(node),
                 published=normalize_date(_child_text(node, "pubDate")),
                 guid=clean_text(_child_text(node, "guid")) or None,
+                image=_find_image(node),
             )
         )
     return items
@@ -188,6 +230,7 @@ def _parse_atom(root: ET.Element) -> list[FeedItem]:
                 description=_atom_description(entry),
                 published=_atom_date(entry),
                 guid=clean_text(_child_text(entry, "id")) or None,
+                image=_find_image(entry),
             )
         )
     return items
