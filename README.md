@@ -70,6 +70,12 @@ $ pip install -e .
 $ feedtidy --help
 ```
 
+## Testing
+
+```
+$ python -m unittest discover -s tests
+```
+
 ## License
 
 MIT, see LICENSE.
