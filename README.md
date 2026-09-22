@@ -26,6 +26,12 @@ From stdin (the default when no path is given):
 $ curl -s https://example.com/feed.xml | feedtidy
 ```
 
+Or point it straight at a feed URL:
+
+```
+$ feedtidy https://example.com/feed.xml
+```
+
 JSON output for piping into something else:
 
 ```
